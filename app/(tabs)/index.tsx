@@ -1,58 +1,138 @@
-import { View, Text, ScrollView, Image, StyleSheet } from "react-native";
+import { View, Text, Image, StyleSheet, TouchableOpacity, FlatList, ScrollView, Linking } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
-export default function Home() {
+const heroMovie = {
+  title: "Bloodshot",
+  image: "https://image.tmdb.org/t/p/w780/8WUVHemHFH2ZIP6NWkwlHWsyrEL.jpg",
+  link: "https://www.netflix.com/title/81768545"
+};
+
+const popularMovies = [
+  {
+    id: "1",
+    title: "ธี่หยด 3",
+    image: "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQkvtDy_bvsLMMtaOErcTu62DroQYVb9tpsJxVQvmvTljpw8OyZ",
+    link: "https://www.netflix.com/title/81768545"
+  },
+  {
+    id: "2",
+    title: "Squid Game",
+    image: "https://image.tmdb.org/t/p/w342/dDlEmu3EZ0Pgg93K2SVNLCjCSvE.jpg",
+    link: "https://www.netflix.com/title/81040344"
+  },
+  {
+    id: "3",
+    title: "Business Proposal",
+    image: "https://image.tmdb.org/t/p/w342/1b6Z9L5W3d1bJZ7Z84qxdjQbaOa.jpg",
+    link: "https://www.netflix.com/title/81509440"
+  },
+];
+
+export default function Index() {
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>สำหรับคุณ</Text>
+      {/* HEADER */}
+      <Text style={styles.header}>สำหรับคุณ</Text>
 
-      <Image
-        source={{
-          uri: "https://picsum.photos/400/220&quot"}}
-          style={ styles.banner }
-        
-      /> 
+      {/* HERO IMAGE (ยาว ๆ แบบ Netflix) */}
+      <View style={styles.heroWrapper}>
+        <Image source={{ uri: heroMovie.image }} style={styles.heroImage} />
+        <View style={styles.heroButtons}>
+          <TouchableOpacity
+            style={styles.playButton}
+            onPress={() => Linking.openURL(heroMovie.link)}
+          >
+            <Ionicons name="play" size={20} color="#000" />
+            <Text style={styles.playText}> เล่น</Text>
+          </TouchableOpacity>
 
-      <Text style={styles.section}>ใหม่ที่ Netflix</Text>
+          <TouchableOpacity style={styles.listButton}>
+            <Ionicons name="add" size={20} color="#fff" />
+            <Text style={styles.listText}> รายการของฉัน</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
 
-     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        {[1, 2, 3, 4, 5].map((i) => (
-      <Image
-        key={i}
-source={{ uri: `https://picsum.photos/150/200?${i}` }}
-        style={styles.poster}/>))}
-        </ScrollView>
+      {/* POPULAR */}
+      <Text style={styles.sectionTitle}>รายการยอดนิยม</Text>
+
+      <FlatList
+        horizontal
+        data={popularMovies}
+        keyExtractor={(item) => item.id}
+        showsHorizontalScrollIndicator={false}
+        renderItem={({ item }) => (
+          <TouchableOpacity onPress={() => Linking.openURL(item.link)}>
+            <Image source={{ uri: item.image }} style={styles.poster} />
+          </TouchableOpacity>
+        )}
+      />
     </ScrollView>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#000",
-    padding: 10,
+    paddingTop: 40,
   },
-  title: {
+  header: {
     color: "#fff",
     fontSize: 22,
     fontWeight: "bold",
+    paddingHorizontal: 16,
     marginBottom: 10,
   },
-  banner: {
-    width: "100%",
-    height: 220,
-    borderRadius: 10,
+  heroWrapper: {
     marginBottom: 20,
   },
-  section: {
+  heroImage: {
+    width: "100%",
+    height: 420, // <<<<< ความยาวรูปแบบ Netflix
+  },
+  heroButtons: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 10,
+  },
+  playButton: {
+    flexDirection: "row",
+    backgroundColor: "#fff",
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 4,
+    marginRight: 10,
+    alignItems: "center",
+  },
+  playText: {
+    color: "#000",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  listButton: {
+    flexDirection: "row",
+    backgroundColor: "#333",
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 4,
+    alignItems: "center",
+  },
+  listText: {
+    color: "#fff",
+    fontSize: 16,
+  },
+  sectionTitle: {
     color: "#fff",
     fontSize: 18,
+    fontWeight: "bold",
+    marginLeft: 16,
     marginBottom: 10,
   },
   poster: {
     width: 120,
     height: 180,
-    borderRadius: 8,
-    marginRight: 10,
+    marginLeft: 16,
+    borderRadius: 6,
   },
 });

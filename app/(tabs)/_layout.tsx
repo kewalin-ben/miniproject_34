@@ -6,6 +6,7 @@ export default function Layout() {
       <Stack.Screen name="login" />
       <Stack.Screen name="pin" />
       <Stack.Screen name="(tabs)" />
+      
     </Stack>
   );
 }

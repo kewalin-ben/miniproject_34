@@ -35,6 +35,10 @@ const popularMovies = [
   },
 ];
 
+const Movies = [
+
+];
+
 export default function Index() {
   return (
     <ScrollView style={styles.container}>
@@ -62,9 +66,6 @@ export default function Index() {
 
       {/* POPULAR */}
       <Text style={styles.sectionTitle}>รายการยอดนิยม</Text>
-
-      
-
       <FlatList
         horizontal
         data={popularMovies}
@@ -75,7 +76,8 @@ export default function Index() {
             <Image source={{ uri: item.image }} style={styles.poster} />
           </TouchableOpacity>
         )}
-      />
+      />                                                                                  
+
     </ScrollView>
   );
 }

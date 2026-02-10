@@ -12,19 +12,26 @@ const popularMovies = [
     id: "1",
     title: "ธี่หยด 3",
     image: "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQkvtDy_bvsLMMtaOErcTu62DroQYVb9tpsJxVQvmvTljpw8OyZ",
-    link: "https://www.netflix.com/title/81768545"
   },
   {
     id: "2",
     title: "Squid Game",
     image: "https://image.tmdb.org/t/p/w342/dDlEmu3EZ0Pgg93K2SVNLCjCSvE.jpg",
-    link: "https://www.netflix.com/title/81040344"
   },
   {
     id: "3",
     title: "Business Proposal",
-    image: "https://image.tmdb.org/t/p/w342/1b6Z9L5W3d1bJZ7Z84qxdjQbaOa.jpg",
-    link: "https://www.netflix.com/title/81509440"
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRCGbpKd0ucb3Uzkh22pD-8rUjrmfD63szv0g&s",
+  },
+  {
+    id: "4",
+    title: "The ",
+    image: "https://pbs.twimg.com/media/Fw0s37BXoAcRTGB.jpg",
+  },
+  {
+    id: "5",
+    title: "True Beauty",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTWjGPtbkkURLxQncrQFcj4tLB-T46GyUjeog&s",
   },
 ];
 
@@ -34,7 +41,7 @@ export default function Index() {
       {/* HEADER */}
       <Text style={styles.header}>สำหรับคุณ</Text>
 
-      {/* HERO IMAGE (ยาว ๆ แบบ Netflix) */}
+      {/* HERO IMAGE*/}
       <View style={styles.heroWrapper}>
         <Image source={{ uri: heroMovie.image }} style={styles.heroImage} />
         <View style={styles.heroButtons}>
@@ -56,13 +63,15 @@ export default function Index() {
       {/* POPULAR */}
       <Text style={styles.sectionTitle}>รายการยอดนิยม</Text>
 
+      
+
       <FlatList
         horizontal
         data={popularMovies}
         keyExtractor={(item) => item.id}
         showsHorizontalScrollIndicator={false}
         renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => Linking.openURL(item.link)}>
+          <TouchableOpacity onPress={() => console.log(item.title)}>
             <Image source={{ uri: item.image }} style={styles.poster} />
           </TouchableOpacity>
         )}

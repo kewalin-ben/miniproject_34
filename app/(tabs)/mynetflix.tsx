@@ -1,35 +1,72 @@
 import React, { useState, useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { View, Text, Image, StyleSheet, FlatList, TouchableOpacity} from 'react-native';
+import { View, Text, Image, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage'; //
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ScrollView } from 'react-native';
 
 type Movie = {
   id: string;
   image: string;
 };
 
-const myList: Movie[] = [
-  {
-    id: '1',
-    image: 'https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png',
-  },
-  {
-    id: '2',
-    image: 'https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png',
-  },
-];
-
 export default function ProfileScreen() {
-  const [myList, setMyList] = useState([]);
+  const [myList, setMyList] = useState<Movie[]>([]);
 
+  const STORAGE_KEY = '@movie_list';
+
+  // โหลดข้อมูล
   const loadData = async () => {
     try {
-      const jsonValue = await AsyncStorage.getItem('@movie_list');
+      const jsonValue = await AsyncStorage.getItem(STORAGE_KEY);
       setMyList(jsonValue != null ? JSON.parse(jsonValue) : []);
     } catch (e) {
       console.log('Error loading data');
     }
+  };
+
+  // เพิ่มข้อมูล
+  const addMovie = async () => {
+    const movies = [
+      'https://upload.wikimedia.org/wikipedia/th/7/76/True_Beauty_TV_series_poster.jpg',
+      'https://i0.wp.com/www.korseries.com/wp-content/uploads/2024/03/Queen-of-tears-tvn-netflix-poster-th-040324.jpg?resize=692%2C1024&ssl=1',
+      'https://s359.kapook.com/r/600/auto/pagebuilder/1332cd36-83ad-4a91-9894-0357c00ddcf2.jpg',
+      'https://s359.kapook.com/pagebuilder/b2d0fdb5-a599-44ed-932b-1a247a0460e5.jpg',
+      'https://s359.kapook.com/pagebuilder/5efe817b-01b6-496f-bbf7-88299fee4226.jpg',
+      'https://s359.kapook.com/pagebuilder/885e7f35-2967-4b22-910d-9e77e18059ac.jpg',
+      'https://mpics.mgronline.com/pics/Images/565000012416705.JPEG',
+      'https://cms.dmpcdn.com/ugcarticle/2026/02/03/618f75d0-00ad-11f1-842a-7baa2fadedfa_webp_original.webp'
+    ];
+
+    const randomImage = movies[Math.floor(Math.random() * movies.length)];
+
+    const newMovie: Movie = {
+      id: Date.now().toString(),
+      image: randomImage,
+    };
+
+    const updatedList = [...myList, newMovie];
+    setMyList(updatedList);
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedList));
+  };
+
+  const deleteMovie = async (id: string) => {
+    Alert.alert(
+      'ยืนยันการลบ',
+      'คุณต้องการลบรายการนี้หรือไม่?',
+      [
+        { text: 'ยกเลิก', style: 'cancel' },
+        {
+          text: 'ลบ',
+          style: 'destructive',
+          onPress: async () => {
+            const filtered = myList.filter(item => item.id !== id);
+            setMyList(filtered);
+            await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
+          }
+        }
+      ]
+    );
   };
 
   useEffect(() => {
@@ -38,44 +75,75 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <ScrollView>
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>Netflix ของฉัน</Text>
 
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Netflix ของฉัน</Text>
-        <View style={styles.headerIcons}>
-          <Ionicons name="search" size={24} color="white" style={{ marginRight: 20 }} />
-          <Ionicons name="menu" size={24} color="white" />
+          <TouchableOpacity onPress={addMovie}>
+            <Ionicons name="add-circle" size={28} color="white" />
+          </TouchableOpacity>
         </View>
-      </View>
 
+        <Text style={styles.sectionTitle}>
+          รายการทีวีและภาพยนตร์ที่คุณถูกใจ
+        </Text>
 
-      <View style={styles.profileBox}>
-        <Image
-          source={{
-            uri: 'https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png'
-          }}
-          style={styles.avatar}
+        <FlatList
+          data={myList}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <View style={styles.movieCard}>
+              <Image source={{ uri: item.image }} style={styles.poster} />
+
+              <TouchableOpacity
+                style={styles.deleteButton}
+                onPress={() => deleteMovie(item.id)}
+              >
+                <Ionicons name="trash" size={14} color="white" />
+                <Text style={styles.deleteText}>ลบ</Text>
+              </TouchableOpacity>
+            </View>
+          )}
         />
-        <Text style={styles.profileName}>.i.</Text>
-      </View>
+        <Text style={styles.sectionTitle}>
+           รายการของฉัน
+        </Text>
 
-      <Text style={styles.sectionTitle}>รายการทีวีและภาพยนตร์ที่คุณถูกใจ</Text>
+         <FlatList
+           data={myList}
+           horizontal
+           showsHorizontalScrollIndicator={false}
+           keyExtractor={(item) => item.id + "2"}
+           renderItem={({ item }) => (
+            <View style={styles.movieCard}>
+                 <Image source={{ uri: item.image }} style={styles.poster} />
+                  </View>
 
+                  
+                )}
+              />
 
-      <FlatList<Movie>
-        data={myList}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.movieCard}>
-            <Image source={{ uri: item.image }} style={styles.poster} />
-            <TouchableOpacity style={styles.shareButton}>
-              <Ionicons name="paper-plane-outline" size={14} color="white" />
-              <Text style={styles.shareText}>แชร์</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-      />
+        <Text style={styles.sectionTitle}>
+           ตัวอย่างที่ดูแล้ว
+        </Text>
+
+         <FlatList
+           data={myList}
+           horizontal
+           showsHorizontalScrollIndicator={false}
+           keyExtractor={(item) => item.id + "2"}
+           renderItem={({ item }) => (
+            <View style={styles.movieCard}>
+                 <Image source={{ uri: item.image }} style={styles.poster} />
+                  </View>
+
+                  
+                )}
+              />
+      </ScrollView>
+
     </SafeAreaView>
   );
 }
@@ -100,28 +168,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
   },
 
-  headerIcons: {
-    flexDirection: 'row'
-  },
-
-  profileBox: {
-    alignItems: 'center',
-    marginVertical: 20
-  },
-
-  avatar: {
-    width: 80,
-    height: 80,
-    borderRadius: 8
-  },
-
-  profileName: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginTop: 10
-  },
-
   sectionTitle: {
     color: '#fff',
     fontSize: 16,
@@ -140,9 +186,9 @@ const styles = StyleSheet.create({
     borderRadius: 4
   },
 
-  shareButton: {
+  deleteButton: {
     flexDirection: 'row',
-    backgroundColor: '#222',
+    backgroundColor: '#E50914',
     padding: 6,
     justifyContent: 'center',
     alignItems: 'center',
@@ -150,7 +196,7 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 4
   },
 
-  shareText: {
+  deleteText: {
     color: '#fff',
     fontSize: 12,
     marginLeft: 5

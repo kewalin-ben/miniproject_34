@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, Alert } from 'react-native';
-import { useRouter } from 'expo-router';
+import React, { useState } from 'react'
+import { View, Text, TextInput, StyleSheet, Alert } from 'react-native'
+import { useRouter } from 'expo-router'
+import { useLocalSearchParams } from 'expo-router'
+
+
 
 export default function PinScreen() {
   const router = useRouter();
   const [pin, setPin] = useState('');
+  const { name } = useLocalSearchParams();
 
   const handlePinChange = (text: string) => {
     setPin(text);

@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons'; // ตรงตามเงื่อนไขข้อ 8
+import { Ionicons } from '@expo/vector-icons' 
 
 export default function RootLayout() {
   return (

@@ -1,149 +1,156 @@
-import { View, Text, Image, StyleSheet, TouchableOpacity, FlatList, ScrollView, Linking } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import React from 'react';
+import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, ImageBackground } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
-const heroMovie = {
-  title: "Bloodshot",
-  image: "https://image.tmdb.org/t/p/w780/8WUVHemHFH2ZIP6NWkwlHWsyrEL.jpg",
-  link: "https://www.netflix.com/title/81768545"
-};
-
-const popularMovies = [
-  {
-    id: "1",
-    title: "ธี่หยด 3",
-    image: "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQkvtDy_bvsLMMtaOErcTu62DroQYVb9tpsJxVQvmvTljpw8OyZ",
-  },
-  {
-    id: "2",
-    title: "Squid Game",
-    image: "https://image.tmdb.org/t/p/w342/dDlEmu3EZ0Pgg93K2SVNLCjCSvE.jpg",
-  },
-  {
-    id: "3",
-    title: "Business Proposal",
-    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRCGbpKd0ucb3Uzkh22pD-8rUjrmfD63szv0g&s",
-  },
-  {
-    id: "4",
-    title: "The ",
-    image: "https://pbs.twimg.com/media/Fw0s37BXoAcRTGB.jpg",
-  },
-  {
-    id: "5",
-    title: "True Beauty",
-    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTWjGPtbkkURLxQncrQFcj4tLB-T46GyUjeog&s",
-  },
-];
-
-const Movies = [
-
-];
-
-export default function Index() {
+export default function HomeScreen() {
+  
   return (
     <ScrollView style={styles.container}>
-      {/* HEADER */}
-      <Text style={styles.header}>สำหรับคุณ</Text>
+      {/* 1. ส่วนหนังเด่น (Hero Section) ตามรูปที่ส่งมา */}
+      <ImageBackground
+        source={{
+          uri: 'https://s359.kapook.com/pagebuilder/f387e97c-8ed1-49e0-a902-bdf12f2bd1b9.jpg'
+        }} // ใส่ URL รูป "7 ประจัญบาน"
+        style={styles.heroImage}
+      >
+        <View style={styles.heroOverlay}>
+          {/* ชื่อเรื่องขนาดใหญ่ */}
+          <Text style={styles.heroTitle}>7 ประจัญบาน</Text>
+          <Text style={styles.heroSubtitle}>ดูตอนใหม่ได้วันพฤหัสบดีนี้</Text>
 
-      {/* HERO IMAGE*/}
-      <View style={styles.heroWrapper}>
-        <Image source={{ uri: heroMovie.image }} style={styles.heroImage} />
-        <View style={styles.heroButtons}>
-          <TouchableOpacity
-            style={styles.playButton}
-            onPress={() => Linking.openURL(heroMovie.link)}
-          >
-            <Ionicons name="play" size={20} color="#000" />
-            <Text style={styles.playText}> เล่น</Text>
-          </TouchableOpacity>
+          {/* แถบปุ่มกด (Play / My List) */}
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.playButton}>
+              <Ionicons name="play" size={24} color="black" />
+              <Text style={styles.playButtonText}>เล่น</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity style={styles.listButton}>
-            <Ionicons name="add" size={20} color="#fff" />
-            <Text style={styles.listText}> รายการของฉัน</Text>
-          </TouchableOpacity>
+            <TouchableOpacity style={styles.myListButton}>
+              <Ionicons name="add" size={24} color="white" />
+              <Text style={styles.myListText}>รายการของฉัน</Text>
+            </TouchableOpacity>
+          </View>
         </View>
+      </ImageBackground>
+
+      {/* 2. รายการหนังด้านล่าง (Horizontal List) */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>รายการทีวีแนวคอมเมดี้สัญชาติเกาหลี</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          {[1, 2, 3, 4].map((item) => (
+            <View key={item} style={styles.movieCard}>
+              <Image
+                source={{
+                  uri: 'https://upload.wikimedia.org/wikipedia/th/7/76/True_Beauty_TV_series_poster.jpg'
+                }}
+                style={styles.poster}
+              />
+            </View>
+          ))}
+        </ScrollView>
       </View>
-
-      {/* POPULAR */}
-      <Text style={styles.sectionTitle}>รายการยอดนิยม</Text>
-      <FlatList
-        horizontal
-        data={popularMovies}
-        keyExtractor={(item) => item.id}
-        showsHorizontalScrollIndicator={false}
-        renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => console.log(item.title)}>
-            <Image source={{ uri: item.image }} style={styles.poster} />
-          </TouchableOpacity>
-        )}
-      />                                                                                  
-
-    </ScrollView>
+    </ScrollView >
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#000",
-    paddingTop: 40,
+    backgroundColor: '#000'
   },
-  header: {
-    color: "#fff",
-    fontSize: 22,
-    fontWeight: "bold",
-    paddingHorizontal: 16,
-    marginBottom: 10,
-  },
-  heroWrapper: {
-    marginBottom: 20,
-  },
+
   heroImage: {
-    width: "100%",
-    height: 420, // <<<<< ความยาวรูปแบบ Netflix
+    width: '100%',
+    height: 420,
+    borderBottomLeftRadius: 18,
+    borderBottomRightRadius: 18,
+    overflow: 'hidden',
+    justifyContent: 'flex-end'
   },
-  heroButtons: {
-    flexDirection: "row",
-    justifyContent: "center",
-    marginTop: 10,
+
+  heroOverlay: {
+    padding: 16,
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.1)', // เงาดำจางๆ ให้ตัวหนังสือชัด
   },
+
+  heroTitle: {
+    color: '#fff',
+    fontSize: 40,
+    fontWeight: 'bold',
+    textAlign: 'center'
+  },
+
+  heroSubtitle: {
+    color: '#fff',
+    fontSize: 14,
+    marginVertical: 10
+  },
+
+  buttonContainer: {
+    flexDirection: 'row',
+    marginTop: 10
+  },
+
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingTop: 50,
+    paddingBottom: 10,
+  },
+  headerText: {
+    color: '#fff',
+    fontSize: 22,
+    fontWeight: 'bold',
+  },
+
   playButton: {
-    flexDirection: "row",
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
+    flexDirection: 'row',
+    paddingHorizontal: 30,
     paddingVertical: 8,
-    paddingHorizontal: 20,
     borderRadius: 4,
-    marginRight: 10,
-    alignItems: "center",
+    alignItems: 'center',
+    marginRight: 10
   },
-  playText: {
-    color: "#000",
-    fontSize: 16,
-    fontWeight: "bold",
+
+  playButtonText: {
+    color: '#000',
+    fontWeight: 'bold',
+    marginLeft: 5
   },
-  listButton: {
-    flexDirection: "row",
-    backgroundColor: "#333",
+
+  myListButton: {
+    backgroundColor: '#333',
+    flexDirection: 'row',
+    paddingHorizontal: 20,
     paddingVertical: 8,
-    paddingHorizontal: 20,
     borderRadius: 4,
-    alignItems: "center",
+    alignItems: 'center'
   },
-  listText: {
-    color: "#fff",
-    fontSize: 16,
+
+  myListText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    marginLeft: 5
   },
+
+  section: { padding: 10 },
+
   sectionTitle: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
-    marginLeft: 16,
-    marginBottom: 10,
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 10
   },
+
+  movieCard: { marginRight: 10 },
+
   poster: {
-    width: 120,
-    height: 180,
-    marginLeft: 16,
-    borderRadius: 6,
-  },
+    width: 110,
+    height: 160,
+    borderRadius: 4
+  }
 });

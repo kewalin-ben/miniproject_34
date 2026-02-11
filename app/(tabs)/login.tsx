@@ -1,73 +1,39 @@
-import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
-import { useRouter } from "expo-router";
+import React from 'react';
+import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { useRouter } from 'expo-router';
 
-const profiles = [
-  {
-    id: 1,
-    name: "kuromi",
-    avatar: "https://i.pinimg.com/474x/f3/ab/1d/f3ab1dc2ccc4639fd329432e033d89e1.jpg",
-  },
-  {
-    id: 2,
-    name: "i love gay",
-    avatar: "https://deanmorriscards.co.uk/cdn/shop/files/RAN-154_b6e60568-7230-4f5b-a33d-79a2742d72a9.jpg?v=1768271671",
-  },
-  {
-    id: 3,
-    name: "my melody",
-    avatar: "https://preview.redd.it/is-there-a-reason-why-theres-seen-to-be-a-bit-of-discourse-v0-xot0sz4fwtld1.png?auto=webp&s=f69804e8880d4b9afd94c03ac8ed179bbcfeab3f",
-  },
-];
-
-export default function Login() {
+export default function LoginScreen() {
   const router = useRouter();
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>เลือกโปรไฟล์</Text>
+      <Text style={styles.title}>ใครกำลังรับชมอยู่?</Text>
 
-      <View style={styles.row}>
-        {profiles.map((p) => (
-          <TouchableOpacity
-            key={p.id}
-            style={styles.profile}
-            onPress={() => router.push("/pin")}
-          >
-            <Image source={{ uri: p.avatar }} style={styles.avatar} />
-            <Text style={styles.name}>{p.name}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+      {/* จำลองโปรไฟล์จากรูปที่ 1 */}
+      <TouchableOpacity
+          style={styles.profileBox}
+        
+        onPress={() => router.push('/pin')}
+      >
+        <Image
+          source={{
+            uri: 'https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png'
+          }} 
+            style={ styles.avatar }
+        />
+            <Text style={styles.name}>เคเค</Text>
+        </TouchableOpacity>
+
+      <Text style={styles.footer}>จัดการโปรไฟล์</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#000",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  title: {
-    color: "#fff",
-    fontSize: 22,
-    marginBottom: 30,
-  },
-  row: {
-    flexDirection: "row",
-  },
-  profile: {
-    alignItems: "center",
-    marginHorizontal: 15,
-  },
-  avatar: {
-    width: 90,
-    height: 90,
-    borderRadius: 10,
-    marginBottom: 8,
-  },
-  name: {
-    color: "#fff",
-  },
-});
+  container: { flex: 1, backgroundColor: '#000', alignItems: 'center', justifyContent: 'center' },
+  profileBox: {alignItems: 'center',marginBottom: 20},
+  title: { color: '#fff', fontSize: 20, marginBottom: 30, fontWeight: 'bold' },
+  avatar: { width: 100, height: 100, borderRadius: 10, marginBottom: 10 },
+  name: { color: '#fff', fontSize: 16 },
+  footer: { color: 'gray', marginTop: 50, fontSize: 14 }
+})

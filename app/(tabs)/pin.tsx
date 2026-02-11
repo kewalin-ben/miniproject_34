@@ -1,69 +1,73 @@
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
-import { useRouter } from "expo-router";
-import { useState } from "react";
+import React, { useState } from 'react';
+import { View, Text, TextInput, StyleSheet, Alert } from 'react-native';
+import { useRouter } from 'expo-router';
 
-export default function Pin() {
-  const [pin, setPin] = useState("");
+export default function PinScreen() {
   const router = useRouter();
+  const [pin, setPin] = useState('');
 
-  const checkPin = () => {
-    if (pin === "1234") {
-      router.replace("/(tabs)");
-    } else {
-      alert("รหัสไม่ถูกต้อง");
+  const handlePinChange = (text: string) => {
+    setPin(text);
+
+    // ตัวอย่าง PIN = 1234
+    if (text.length === 4) {
+      if (text === '1234') {
+        router.replace('/'); // หรือหน้าโปรไฟล์ของเธอ
+      } else {
+        Alert.alert('รหัส PIN ไม่ถูกต้อง');
+        setPin('');
+      }
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>password</Text>
+      <Text style={styles.header}>
+        ป้อนรหัส PIN เพื่อเข้าสู่โปรไฟล์
+      </Text>
 
       <TextInput
-        value={pin}
-        onChangeText={setPin}
-        keyboardType="number-pad"
-        secureTextEntry
+        style={styles.pinInput}
+        keyboardType="numeric"
         maxLength={4}
-        style={styles.input}
+        secureTextEntry
+        autoFocus
+        value={pin}
+        onChangeText={handlePinChange}
       />
 
-      <TouchableOpacity style={styles.button} onPress={checkPin}>
-        <Text style={styles.btnText}>Login</Text>
-      </TouchableOpacity>
+      <Text style={styles.forget}>หากลืมรหัส PIN</Text>
     </View>
   );
 }
 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#000",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: '#000',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
   },
-  title: {
-    color: "#fff",
-    fontSize: 20,
+  header: {
+    color: '#fff',
+    fontSize: 18,
     marginBottom: 20,
+    textAlign: 'center',
   },
-  input: {
-    width: 160,
-    borderBottomWidth: 2,
-    borderColor: "red",
-    color: "#fff",
-    fontSize: 24,
-    textAlign: "center",
-    marginBottom: 30,
+  pinInput: {
+    backgroundColor: '#333',
+    color: '#fff',
+    fontSize: 30,
+    textAlign: 'center',
+    width: 120,
+    padding: 10,
+    borderRadius: 8,
   },
-  button: {
-    backgroundColor: "red",
-    paddingHorizontal: 30,
-    paddingVertical: 10,
-    borderRadius: 5,
-  },
-  btnText: {
-    color: "#fff",
-    fontSize: 16,
+  forget: {
+    color: '#007AFF',
+    marginTop: 20,
   },
 });
 

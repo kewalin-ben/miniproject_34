@@ -73,7 +73,9 @@ const styles = StyleSheet.create({
 
   profileBox: {
     alignItems: 'center',
-    marginBottom: 20
+    marginBottom: 20,
+    marginHorizontal: 10,
+    borderRadius: 20
   },
 
   title: {

@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { View, Text, Image, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ScrollView } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
+
+
 
 type Movie = {
   id: string;
@@ -11,7 +14,36 @@ type Movie = {
 };
 
 export default function ProfileScreen() {
-  const [myList, setMyList] = useState<Movie[]>([]);
+  const [favoriteList, setFavoriteList] = useState<Movie[]>([]);
+
+  const [myList, setMyList] = useState<Movie[]>([
+  {
+      id: 'm1',
+      image: 'https://s359.kapook.com/pagebuilder/b2d0fdb5-a599-44ed-932b-1a247a0460e5.jpg'
+    },
+    {
+      id: 'm2',
+      image: 'https://i.pinimg.com/736x/90/56/5b/90565bb85855f7b0d0dafcf31461d0c6.jpg'
+    },
+    {
+      id: 'm3',
+      image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRQEXW_4t4g7Kda4-w4D_7nEzCw4ZI4_MIFAg&s'
+    },
+  ]);
+  const watchedList: Movie[] = [
+    {
+      id: 'w1',
+      image: 'https://s359.kapook.com/pagebuilder/b2d0fdb5-a599-44ed-932b-1a247a0460e5.jpg'
+    },
+    {
+      id: 'w2',
+      image: 'https://i.pinimg.com/736x/90/56/5b/90565bb85855f7b0d0dafcf31461d0c6.jpg'
+    },
+    {
+      id: 'w3',
+      image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRQEXW_4t4g7Kda4-w4D_7nEzCw4ZI4_MIFAg&s'
+    },
+  ];
 
   const STORAGE_KEY = '@movie_list';
 
@@ -19,36 +51,23 @@ export default function ProfileScreen() {
   const loadData = async () => {
     try {
       const jsonValue = await AsyncStorage.getItem(STORAGE_KEY);
-      setMyList(jsonValue != null ? JSON.parse(jsonValue) : []);
+      setFavoriteList(jsonValue != null ? JSON.parse(jsonValue) : []);
     } catch (e) {
       console.log('Error loading data');
     }
   };
 
   // เพิ่มข้อมูล
-  const addMovie = async () => {
-    const movies = [
-      'https://upload.wikimedia.org/wikipedia/th/7/76/True_Beauty_TV_series_poster.jpg',
-      'https://i0.wp.com/www.korseries.com/wp-content/uploads/2024/03/Queen-of-tears-tvn-netflix-poster-th-040324.jpg?resize=692%2C1024&ssl=1',
-      'https://s359.kapook.com/r/600/auto/pagebuilder/1332cd36-83ad-4a91-9894-0357c00ddcf2.jpg',
-      'https://s359.kapook.com/pagebuilder/b2d0fdb5-a599-44ed-932b-1a247a0460e5.jpg',
-      'https://s359.kapook.com/pagebuilder/5efe817b-01b6-496f-bbf7-88299fee4226.jpg',
-      'https://s359.kapook.com/pagebuilder/885e7f35-2967-4b22-910d-9e77e18059ac.jpg',
-      'https://mpics.mgronline.com/pics/Images/565000012416705.JPEG',
-      'https://cms.dmpcdn.com/ugcarticle/2026/02/03/618f75d0-00ad-11f1-842a-7baa2fadedfa_webp_original.webp'
-    ];
+  const addToFavorite = async (image: string) => {
+    const newMovie = { id: Date.now().toString(), image };
+    const updatedList = [...favoriteList, newMovie];
 
-    const randomImage = movies[Math.floor(Math.random() * movies.length)];
-
-    const newMovie: Movie = {
-      id: Date.now().toString(),
-      image: randomImage,
-    };
-
-    const updatedList = [...myList, newMovie];
-    setMyList(updatedList);
-    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedList));
+    setFavoriteList(updatedList);
+    await AsyncStorage.setItem('@movie_list', JSON.stringify(updatedList));
   };
+
+
+
 
   const deleteMovie = async (id: string) => {
     Alert.alert(
@@ -60,18 +79,20 @@ export default function ProfileScreen() {
           text: 'ลบ',
           style: 'destructive',
           onPress: async () => {
-            const filtered = myList.filter(item => item.id !== id);
-            setMyList(filtered);
-            await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
+            const filtered = favoriteList.filter(item => item.id !== id);
+            setFavoriteList(filtered);
+            await AsyncStorage.setItem('@movie_list', JSON.stringify(filtered));
           }
         }
       ]
     );
   };
 
-  useEffect(() => {
-    loadData();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      loadData();
+    }, [])
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -79,7 +100,7 @@ export default function ProfileScreen() {
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Netflix ของฉัน</Text>
 
-          <TouchableOpacity onPress={addMovie}>
+          <TouchableOpacity onPress={() => addToFavorite('https://s359.kapook.com/pagebuilder/f387e97c-8ed1-49e0-a902-bdf12f2bd1b9.jpg')}>
             <Ionicons name="add-circle" size={28} color="white" />
           </TouchableOpacity>
         </View>
@@ -89,7 +110,7 @@ export default function ProfileScreen() {
         </Text>
 
         <FlatList
-          data={myList}
+          data={favoriteList}
           horizontal
           showsHorizontalScrollIndicator={false}
           keyExtractor={(item) => item.id}
@@ -107,41 +128,41 @@ export default function ProfileScreen() {
             </View>
           )}
         />
-        <Text style={styles.sectionTitle}>
-           รายการของฉัน
-        </Text>
-
-         <FlatList
-           data={myList}
-           horizontal
-           showsHorizontalScrollIndicator={false}
-           keyExtractor={(item) => item.id + "2"}
-           renderItem={({ item }) => (
-            <View style={styles.movieCard}>
-                 <Image source={{ uri: item.image }} style={styles.poster} />
-                  </View>
-
-                  
-                )}
-              />
 
         <Text style={styles.sectionTitle}>
-           ตัวอย่างที่ดูแล้ว
+          รายการของฉัน
         </Text>
 
-         <FlatList
-           data={myList}
-           horizontal
-           showsHorizontalScrollIndicator={false}
-           keyExtractor={(item) => item.id + "2"}
-           renderItem={({ item }) => (
+        <FlatList
+          data={myList}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          keyExtractor={(item) => item.id + "2"}
+          renderItem={({ item }) => (
             <View style={styles.movieCard}>
-                 <Image source={{ uri: item.image }} style={styles.poster} />
-                  </View>
+              <Image source={{ uri: item.image }} style={styles.poster} />
+            </View>
+          )}
+        />
 
-                  
-                )}
-              />
+
+        <Text style={styles.sectionTitle}>
+          ตัวอย่างที่ดูแล้ว
+        </Text>
+
+        <FlatList
+          data={watchedList}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          keyExtractor={(item) => item.id + "3"}
+          renderItem={({ item }) => (
+            <View style={styles.movieCard}>
+              <Image source={{ uri: item.image }} style={styles.poster} />
+            </View>
+
+
+          )}
+        />
       </ScrollView>
 
     </SafeAreaView>
@@ -172,7 +193,8 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 15
+    marginBottom: 6,
+    marginTop: 15
   },
 
   movieCard: {

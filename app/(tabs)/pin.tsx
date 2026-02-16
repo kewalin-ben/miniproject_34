@@ -1,7 +1,9 @@
-import React, { useState } from 'react'
+import React, { use, useState } from 'react'
 import { View, Text, TextInput, StyleSheet, Alert } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useLocalSearchParams } from 'expo-router'
+import { useFocusEffect } from 'expo-router'
+import { useIsFocused } from '@react-navigation/native'
 
 
 
@@ -9,6 +11,11 @@ export default function PinScreen() {
   const router = useRouter();
   const [pin, setPin] = useState('');
   const { name } = useLocalSearchParams();
+  
+  useFocusEffect(() => {
+    setPin('');
+  });   
+  
 
   const handlePinChange = (text: string) => {
     setPin(text);

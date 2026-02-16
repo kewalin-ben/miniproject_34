@@ -1,14 +1,17 @@
-import React from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, ImageBackground } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
+import React from 'react'
+import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, ImageBackground } from 'react-native'
+import { Ionicons } from '@expo/vector-icons'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import MovieRow from '../../components/MovieRow'
+import { useRouter } from 'expo-router'
 
 export default function HomeScreen() {
   const STORAGE_KEY = '@movie_list';
-  const navigation = useNavigation<any>();
+  const router = useRouter();
+  
 
   const addToMyList = async (imageUrl: string) => {
+      console.log("Added:", imageUrl);
     try {
       const jsonValue = await AsyncStorage.getItem(STORAGE_KEY);
       const currentList = jsonValue != null ? JSON.parse(jsonValue) : [];
@@ -17,11 +20,6 @@ export default function HomeScreen() {
       const alreadyExists = currentList.find(
         (item: any) => item.image === imageUrl
       );
-
-      if (alreadyExists) {
-        console.log("มีรายการนี้แล้ว");
-        return;
-      }
 
       const newMovie = {
         id: Date.now().toString(),
@@ -45,11 +43,10 @@ export default function HomeScreen() {
   return (
 
     <ScrollView style={styles.container}>
-      {/* 1. ส่วนหนังเด่น (Hero Section) ตามรูปที่ส่งมา */}
       <ImageBackground
         source={{
           uri: 'https://s359.kapook.com/pagebuilder/f387e97c-8ed1-49e0-a902-bdf12f2bd1b9.jpg'
-        }} // ใส่ URL รูป "7 ประจัญบาน"
+        }}
         style={styles.heroImage}
       >
         <View style={styles.heroOverlay}>
@@ -70,7 +67,7 @@ export default function HomeScreen() {
                 await addToMyList(
                   'https://s359.kapook.com/pagebuilder/f387e97c-8ed1-49e0-a902-bdf12f2bd1b9.jpg'
                 );
-                navigation.navigate('mynetflix');
+                router.push('/mynetflix');
               }}
             >
               <Ionicons name="add" size={24} color="white" />
@@ -80,12 +77,9 @@ export default function HomeScreen() {
         </View>
       </ImageBackground>
 
-      {/* 2. รายการหนังด้านล่าง (Horizontal List) */}
-      {/* แถวที่ 1 */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>รายการทีวีแนวคอมเมดี้สัญชาติเกาหลี</Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {[
+      <MovieRow
+        title="รายการทีวีแนวคอมเมดี้สัญชาติเกาหลี"
+        images={[
             'https://upload.wikimedia.org/wikipedia/th/7/76/True_Beauty_TV_series_poster.jpg',
             'https://i0.wp.com/www.korseries.com/wp-content/uploads/2024/03/Queen-of-tears-tvn-netflix-poster-th-040324.jpg?resize=692%2C1024&ssl=1',
             'https://s359.kapook.com/r/600/auto/pagebuilder/1332cd36-83ad-4a91-9894-0357c00ddcf2.jpg',
@@ -93,43 +87,30 @@ export default function HomeScreen() {
             'https://s359.kapook.com/pagebuilder/5efe817b-01b6-496f-bbf7-88299fee4226.jpg',
             'https://s359.kapook.com/pagebuilder/885e7f35-2967-4b22-910d-9e77e18059ac.jpg',
             'https://mpics.mgronline.com/pics/Images/565000012416705.JPEG',
-            'https://cms.dmpcdn.com/ugcarticle/2026/02/03/618f75d0-00ad-11f1-842a-7baa2fadedfa_webp_original.webp'
-          ].map((image, index) => (
-            <View key={index} style={styles.movieCard}>
-              <TouchableOpacity onPress={() => addToMyList(image)}>
-                <Image source={{ uri: image }} style={styles.poster} />
-              </TouchableOpacity>
-            </View>
-          ))}
-        </ScrollView>
-      </View>
+            'https://cms.dmpcdn.com/ugcarticle/2026/02/03/618f75d0-00ad-11f1-842a-7baa2fadedfa_webp_original.webp',
+          ]}
+          addToMyList={addToMyList}
+      />
 
-      {/* แถวที่ 2 */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>ภาพยนตร์เอเชียตะวันออกเฉียงใต้</Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {[
-            'https://scontent.futp1-2.fna.fbcdn.net/v/t39.30808-6/544741242_1371209348345405_5474873055370959877_n.jpg?stp=dst-jpg_s640x640_tt6&_nc_cat=107&ccb=1-7&_nc_sid=833d8c&_nc_ohc=a7zfEv28tJ0Q7kNvwHAzDb5&_nc_oc=Adl2dRPlaGU0g_j5O6cThwufxhWUaQQ5CO3B2px2tIQzp4Zo9cUHzMDmiULCtqQxQySGQweFruCZr5mR9twMHHo6&_nc_zt=23&_nc_ht=scontent.futp1-2.fna&_nc_gid=7iIhLm4FAgFnXNgE2bdEIA&oh=00_Afv3Bcw5Op85gx-g7WAq5G4hIUF3iAVmP6n8diQFIOApNQ&oe=69925BC4',
+      <MovieRow
+        title="ภาพยนตร์เอเชียตะวันออกเฉียงใต้"
+        images={[
+            'https://f.ptcdn.info/350/089/000/t3ddzl29wxt29XD53mfpI-o.jpg',
             'https://lh3.googleusercontent.com/g3qlW_3yHBXyNwwdpofj7Q1aYRQn9mKEWGIqikMdPjidSeOkJUCwbzjfx02FRrHxgxRsbVjvwmoCngbLSfi_xA5GW8XvFBXVUQ=w260',
             'https://i.pinimg.com/736x/90/56/5b/90565bb85855f7b0d0dafcf31461d0c6.jpg',
             'https://s.isanook.com/mv/0/ud/37/185835/teeyai_mainposter.jpg?ip/resize/w728/q80/jpg',
             'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRQEXW_4t4g7Kda4-w4D_7nEzCw4ZI4_MIFAg&s',
             'https://m.media-amazon.com/images/M/MV5BYjg2M2QxYTUtYTE0YS00MWVmLWFlMDQtN2VkNGE2OGNlMGUzXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg',
-          ].map((image, index) => (
-            <View key={index} style={styles.movieCard}>
-              <TouchableOpacity onPress={() => addToMyList(image)}>
-                <Image source={{ uri: image }} style={styles.poster} />
-              </TouchableOpacity>
-            </View>
-          ))}
-        </ScrollView>
-      </View>
+            'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjoDrBnvfT_4BTolEGXWVIczPgNHJCQO6hWtk7kLQbJfNiBNjI1mwiMgZSIA9ONrVhr_NVf0R5QJaGF49L57TUQOdiZTo-QthEjAnWQHrZus_XBXYcvgOxqqorUC2FEJ0MQR-OLpM-tRRNeb6srmU50ss391g6tRY7Q_L-cfhjbiRhtwc7N_KTpZP13TkQ/s1484/47605CB4-8CC9-4F46-9CBC-3F7BFAB4F8DD.webp',
+            'https://images.workpointtoday.com/workpointnews/2021/12/13161529/1639386926_22657_THTheMediumMain2.webp',
+            'https://ptcdn.info/movies/2025/FSoQNijX3t-1743500949_o.jpg'
+        ]}
+        addToMyList={addToMyList}
+      />
 
-      {/* แถวที่ 3 */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>ซีรี่ย์ LGBTQ+</Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {[
+      <MovieRow
+        title="ซีรี่ย์ LGBTQ+"
+        images={[
             'https://upload.wikimedia.org/wikipedia/th/thumb/1/15/ThamePo_Heart_That_Skips_a_Beat_2024_Official_Poster.png/250px-ThamePo_Heart_That_Skips_a_Beat_2024_Official_Poster.png',
             'https://cms.dmpcdn.com/dara/2025/11/29/57d4b020-cd11-11f0-9bba-e38138427309_webp_original.webp',
             'https://upload.wikimedia.org/wikipedia/th/5/51/%E0%B8%8B%E0%B8%AD%E0%B8%87%E0%B9%81%E0%B8%94%E0%B8%87%E0%B9%81%E0%B8%95%E0%B9%88%E0%B8%87%E0%B8%9C%E0%B8%B5.jpg',
@@ -137,17 +118,42 @@ export default function HomeScreen() {
             'https://upload.wikimedia.org/wikipedia/th/thumb/2/2e/Whale_Store_xoxo_2025_Official_Poster.png/250px-Whale_Store_xoxo_2025_Official_Poster.png',
             'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT2emGI-0i9UsNqwSsGm2OOCbEUMR-dubisvA&s',
             'https://image.onehd.net/Media/Test/244727114711751.jpg',
-            'https://s.isanook.com/mv/0/ud/36/182983/298970.jpg?ip/resize/w728/q80/jpg'
-          ].map((image, index) => (
-            <View key={index} style={styles.movieCard}>
-              <TouchableOpacity onPress={() => addToMyList(image)}>
-                <Image source={{ uri: image }} style={styles.poster} />
-              </TouchableOpacity>
-            </View>
-          ))}
-          
-        </ScrollView>
-      </View>
+            'https://s.isanook.com/mv/0/ud/36/182983/298970.jpg?ip/resize/w728/q80/jpg',
+            'https://s359.kapook.com/pagebuilder/d1100769-51ff-4fda-86d4-958800a7488f.jpg'
+         ]}
+         addToMyList={addToMyList}
+      />
+
+      <MovieRow
+        title="ภาพยนตร์ตลกคู่หู"
+        images={[
+            'https://f.ptcdn.info/933/012/000/1386166085-o.jpg',
+            'https://files.thaiware.site/movie/2023-03/images-poster/2303191204146ck.jpg',
+            'https://upload.wikimedia.org/wikipedia/th/a/a3/%E0%B9%83%E0%B8%9A%E0%B8%9B%E0%B8%B4%E0%B8%94%E0%B8%A0%E0%B8%B2%E0%B8%9E%E0%B8%A2%E0%B8%99%E0%B8%95%E0%B8%A3%E0%B9%8C_%E0%B9%84%E0%B8%97%E0%B8%9A%E0%B9%89%E0%B8%B2%E0%B8%99_%E0%B9%80%E0%B8%94%E0%B8%AD%E0%B8%B0%E0%B8%8B%E0%B8%B5%E0%B8%A3%E0%B8%B5%E0%B8%AA%E0%B9%8C_2.1.jpg',
+            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSV0s-UfAUmUZHB8ThfR6mncJrdbGPF1N1c4Q&s',
+            'https://upload.wikimedia.org/wikipedia/th/a/a1/%E0%B9%83%E0%B8%9A%E0%B8%9B%E0%B8%B4%E0%B8%94%E0%B8%A0%E0%B8%B2%E0%B8%9E%E0%B8%A2%E0%B8%99%E0%B8%95%E0%B8%A3%E0%B9%8C_%E0%B9%80%E0%B8%88%E0%B9%89%E0%B8%B2%E0%B8%AB%E0%B8%99%E0%B9%89%E0%B8%B2%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B8%AA%E0%B8%B2%E0%B8%A2%E0%B8%94%E0%B8%B3.jpg',
+            'https://cms.dmpcdn.com/dara/2023/02/11/c4588160-a9db-11ed-a430-3b590511d3ad_webp_original.jpg',
+            'https://s359.kapook.com/rq/600/auto/50/pagebuilder/8bf93ce9-6bb6-47b9-b4c7-7c1018d2a672.jpg',
+            'https://files.thaiware.site/movie/2024-07/images-poster/240724120411x98.jpg'
+         ]}
+         addToMyList={addToMyList}
+      />
+
+      <MovieRow
+        title="อนิเมะยอดนิยม"
+        images={[
+            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTrTFLIwMwrnOaTu0110q4hMxERg5mWOki54w&s',
+            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ_Jjjf7-AA0ZPolHMRSEmXOhCMmRdeib6qqA&s',
+            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS8u07g_ESCRVFuHAlofjKxU5Z4EeGGDoO6ag&s',
+            'https://upload.wikimedia.org/wikipedia/en/6/6c/Solo_Leveling_Volume_1_Cover.jpg',
+            'https://storage.naiin.com/system/application/bookstore/resource/product/202201/540412/1000246024_front_XXL.jpg',
+            'https://www.metalbridges.com/wp-content/uploads/2016/05/My-Hero-Academia-poster.jpg',
+            'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQPHBC2H2BfD9_WaJ6FSx0j7gCUhWCVBkV7myV0FjZxeLn8atHX',
+            'https://upload.wikimedia.org/wikipedia/th/f/f4/Blue_Box%2C_volume_1_thai_version.jpg'
+         ]}
+         addToMyList={addToMyList}
+      />
+
 
     </ScrollView>
 
